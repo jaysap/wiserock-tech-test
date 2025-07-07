@@ -1,0 +1,33 @@
+# docker-compose.yml
+
+# Defines the services (containers) for our application.
+services:
+  # Defines our PostgreSQL service.
+  postgres:
+    # Use the official PostGIS image to include spatial analysis functions.
+    image: postgis/postgis
+
+    # A friendly name for our running container.
+    container_name: wiserock-postgres-local
+
+    # Environment variables to configure the PostgreSQL instance.
+    # Used same credentials from 1Password for consistency.
+    environment:
+      - POSTGRES_USER=silentquery
+      - POSTGRES_PASSWORD=7yQ3jPUczdNmMZA.Bg.Z
+      - POSTGRES_DB=silentquery
+
+    # Maps the port from the container to your local machine.
+    # Format is "HOST_PORT:CONTAINER_PORT".
+    # This makes the database accessible on localhost:5432.
+    ports:
+      - "5432:5432"
+
+    # Defines a volume to persist database data.
+    # This ensures your data is saved even if the container is removed or restarted.
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+# Defines the named volume used by the postgres service.
+volumes:
+  postgres-data:
