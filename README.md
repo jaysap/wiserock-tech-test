@@ -30,8 +30,8 @@ The repository is organized into the following directories:
 |   |-- etl_config.py              # Configuration file for the ETL pipeline.
 |
 |-- sql/
-|   |-- part_2a_prod_analytics.sql # SQL script to create the production analytics views.
-|   |-- part_2b_user_analytics.sql # SQL script for Wise Rock views and all analytical queries.
+|   |-- part_2a_prod_analytics.sql # SQL script to create the production analytics views and analytical queries.
+|   |-- part_2b_user_analytics.sql # SQL script to create the note views and analytical queries.
 |
 |-- docker-compose.yml             # Configuration file for the local PostgreSQL database.
 |-- requirements.txt               # A list of Python dependencies for the project.
