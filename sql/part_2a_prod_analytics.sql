@@ -16,7 +16,7 @@ CREATE SCHEMA IF NOT EXISTS analytics;
 
 -- =============================================================================
 -- View 1: well_attributes
--- Purpose: This view consolidates well header data across mulitple ProCount and WellView tables
+-- Purpose: This view consolidates well header data across multiple ProCount and WellView tables
 -- Sources:
 --     completiontb 
 --         Description: ProCount completion header (csv)
