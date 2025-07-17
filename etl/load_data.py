@@ -9,6 +9,7 @@ import re
 import csv
 from io import StringIO
 from typing import Optional, List, Dict, Any, Iterable, Tuple
+
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 from pandas.io.sql import SQLTable
@@ -16,6 +17,7 @@ import requests
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.types import Integer, Float, TEXT, DATE, DateTime, Boolean, BigInteger
+
 from dotenv import load_dotenv
 # Import configurations from the dedicated schema file
 from etl_config import API_ENDPOINTS, SCHEMA_DEFINITIONS, CSV_LOAD_DTYPE_DICT, USE_MULTITHREADING, MAX_WORKERS
@@ -373,7 +375,7 @@ class ApiExtractor:
                     break  # No more data
 
                 all_records.extend(records)
-                # The pagination offset is incremented by the actual number of records received,
+                # The pagination offset is incremented by the actual number of records received
                 offset += len(records)
 
                 # Conditional logging based on progress percentage
@@ -451,6 +453,7 @@ class ApiExtractor:
                         else:
                             logging.warning(f"No data returned from endpoint '{table_name}'.")
                     except Exception as e:
+                        # Continue to the next endpoint
                         logging.error(f"Failed to process API endpoint {endpoint}: {e}")
         else:
             # --- Sequential Execution Path ---
