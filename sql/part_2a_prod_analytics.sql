@@ -29,27 +29,29 @@ CREATE SCHEMA IF NOT EXISTS analytics;
 --         Columns: batteryname
 --     wellview_wellheader
 --         Description: WellView well header (api)
---         Columns: latitude, longitude
+--         Columns: latitude, longitude, wellida, idwell
+--     ac_property
+--         Description: Aries well header (csv)
+--         Columns: propnum, apinum
 -- =============================================================================
-CREATE OR REPLACE VIEW analytics.well_attributes AS
+CREATE
+OR REPLACE VIEW analytics.well_attributes AS
 SELECT
-    ct.merrickid AS id,            -- Primary key for ProCount tables
+    ct.merrickid AS id,                                 -- Primary key for ProCount tables
     ct.wellname AS well_name,
-    ct.apiwellnumber AS api,
+    COALESCE(ct.apiwellnumber, acp.apinum, wvh.wellida) AS api,
     at.areaname AS area,
     bt.batteryname AS battery,
     wvh.latitude,
-    wvh.longitude,    
-    ct.ariesid AS aries_id,        -- Foreign key for Aries tables
-    ct.wellviewid AS wellview_id   -- Foreign key for WellView tables
+    wvh.longitude,
+    COALESCE(ct.ariesid, acp.propnum) AS aries_id,      -- Foreign key for Aries tables
+    COALESCE(ct.wellviewid, wvh.idwell) AS wellview_id  -- Foreign key for WellView tables
 FROM
     stg.completiontb ct
-    LEFT JOIN stg.areatb at 
-        ON ct.areaid = at.areamerrickid
-    LEFT JOIN stg.batterytb bt 
-        ON ct.batteryid = bt.batterymerrickid
-    LEFT JOIN stg.wellview_wellheader wvh
-        ON ct.wellviewid = wvh.idwell;
+    LEFT JOIN stg.areatb at ON ct.areaid = at.areamerrickid
+    LEFT JOIN stg.batterytb bt ON ct.batteryid = bt.batterymerrickid
+    LEFT JOIN stg.wellview_wellheader wvh ON ct.wellviewid = wvh.idwell OR ct.apiwellnumber = wvh.wellida
+    LEFT JOIN stg.ac_property acp ON ct.apiwellnumber = acp.apinum;
 
 -- =============================================================================
 -- View 2: daily_series
@@ -80,11 +82,10 @@ SELECT
     adc.water AS water_capacity
 FROM
     stg.procount_completiondailytb pcd
-    -- Join to the ProCount completion header to obtain Aries ID
-    LEFT JOIN stg.completiontb ct 
-        ON pcd.merrickid = ct.merrickid
+    LEFT JOIN analytics.well_attributes wa 
+        ON pcd.merrickid = wa.id 
     LEFT JOIN stg.aries_daily_capacities adc 
-        ON ct.ariesid = adc.well_id
+        ON wa.aries_id = adc.well_id 
             AND pcd.productiondate = adc.date;
 
 -- =============================================================================
